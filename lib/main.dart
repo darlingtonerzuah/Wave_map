@@ -2,6 +2,7 @@ import 'screens/device_screen.dart';
 import 'screens/heatmap_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/diagnostics_screen.dart';
+import 'screens/settings_screen.dart';
 void main() {
   runApp(const WifiARApp());
 }
@@ -40,7 +41,7 @@ class _MainShellState extends State<MainShell> {
     HeatmapScreen(),
     DevicesScreen(),
     DiagnosticsScreen(),
-    PlaceholderScreen(label: 'Settings'),
+    SettingsScreen(),
   ];
 
   @override
