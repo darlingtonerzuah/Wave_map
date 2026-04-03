@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -32,7 +33,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _planTile('Pro', 'Unlimited maps, AR, device tracking, exports'),
           _sectionTitle('Account'),
           _actionTile('Privacy Policy', Icons.privacy_tip),
-          _actionTile('Sign Out', Icons.logout),
+          ListTile(
+  leading: const Icon(Icons.logout, color: Colors.grey),
+  title: const Text('Sign Out'),
+ onTap: () async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: const Color(0xFF1A1A1A),
+      title: const Text('Sign Out'),
+      content: const Text('Are you sure you want to sign out?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Sign Out', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
+  }
+},
+          ),
         ],
       ),
     );
