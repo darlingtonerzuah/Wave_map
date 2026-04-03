@@ -1,3 +1,4 @@
+import 'screens/device_screen.dart';
 import 'screens/heatmap_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,7 @@ class _MainShellState extends State<MainShell> {
 
   final List<Widget> _screens = [
     HeatmapScreen(),
-    PlaceholderScreen(label: 'Devices'),
+    DevicesScreen(),
     PlaceholderScreen(label: 'Diagnostics'),
     PlaceholderScreen(label: 'Settings'),
   ];
