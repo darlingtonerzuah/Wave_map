@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final response = await _dio.post(
-        'http://127.0.0.1:5000/api/auth/login',
+        'http://10.11.59.210:5000/api/auth/login',
         data: {
           'email': _emailController.text.trim(),
           'password': _passwordController.text.trim(),

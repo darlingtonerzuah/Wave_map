@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../models/network_device.dart';
+import 'package:flutter/foundation.dart';
+import '../services/wifi_service.dart';
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key});
@@ -21,9 +23,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
     _fetchDevices();
   }
 
-  Future<void> _fetchDevices() async {
-    try {
-      final response = await _dio.get('http://127.0.0.1:5000/api/devices');
+ Future<void> _fetchDevices() async {
+  try {
+    if (kIsWeb) {
+      // Web: use backend mock data
+      final response = await _dio.get('http://10.11.59.210:5000/api/devices');
       setState(() {
         _devices = (response.data as List).map((d) => NetworkDevice(
           name: d['name'],
@@ -33,14 +37,22 @@ class _DevicesScreenState extends State<DevicesScreen> {
         )).toList();
         _loading = false;
       });
-    } catch (e) {
+    } else {
+      // Android: real WiFi scan
+      final wifiService = WifiService();
+      final results = await wifiService.scanDevices();
       setState(() {
-        _error = 'Failed to connect to backend';
+        _devices = results;
         _loading = false;
       });
     }
+  } catch (e) {
+    setState(() {
+      _error = 'Failed to load devices';
+      _loading = false;
+    });
   }
-
+}
   Color _statusColor(String status) {
     switch (status) {
       case 'Strong': return Colors.green;

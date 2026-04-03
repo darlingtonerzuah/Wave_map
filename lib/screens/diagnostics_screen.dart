@@ -22,7 +22,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
 
   Future<void> _fetchDiagnostics() async {
     try {
-      final response = await _dio.get('http://127.0.0.1:5000/api/diagnostics');
+      final response = await _dio.get('http://10.11.59.210:5000/api/diagnostics');
       setState(() {
         _data = response.data;
         _loading = false;
