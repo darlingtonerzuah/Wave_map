@@ -1,14 +1,21 @@
-import 'screens/device_screen.dart';
-import 'screens/heatmap_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/heatmap_screen.dart';
+import 'screens/device_screen.dart';
 import 'screens/diagnostics_screen.dart';
 import 'screens/settings_screen.dart';
-void main() {
-  runApp(const WifiARApp());
+import 'screens/login_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  runApp(WifiARApp(isLoggedIn: token != null));
 }
 
 class WifiARApp extends StatelessWidget {
-  const WifiARApp({super.key});
+  final bool isLoggedIn;
+  const WifiARApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +29,11 @@ class WifiARApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color(0xFF0A0A0A),
       ),
-      home: const MainShell(),
+      initialRoute: isLoggedIn ? '/home' : '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const MainShell(),
+      },
     );
   }
 }
@@ -61,25 +72,6 @@ class _MainShellState extends State<MainShell> {
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Diagnostics'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
-      ),
-    );
-  }
-}
-
-class PlaceholderScreen extends StatelessWidget {
-  final String label;
-  const PlaceholderScreen({super.key, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Color(0xFF00E5FF),
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }

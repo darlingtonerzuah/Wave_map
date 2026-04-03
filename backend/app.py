@@ -1,10 +1,34 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import datetime
 
 app = Flask(__name__)
 CORS(app)
 
-# Mock data for now
+app.config['JWT_SECRET_KEY'] = 'wifiar-secret-key-change-in-prod'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=7)
+jwt = JWTManager(app)
+
+# Mock users db
+USERS = {
+    'demo@wifiar.com': {'password': 'demo123', 'plan': 'free'},
+    'pro@wifiar.com': {'password': 'pro123', 'plan': 'pro'},
+}
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    user = USERS.get(email)
+    if not user or user['password'] != password:
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+    token = create_access_token(identity={'email': email, 'plan': user['plan']})
+    return jsonify({'token': token, 'plan': user['plan'], 'email': email})
+
 @app.route('/api/devices')
 def get_devices():
     return jsonify([
