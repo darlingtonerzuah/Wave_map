@@ -5,6 +5,7 @@ import 'screens/device_screen.dart';
 import 'screens/diagnostics_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/ar_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +54,7 @@ class _MainShellState extends State<MainShell> {
     DevicesScreen(),
     DiagnosticsScreen(),
     SettingsScreen(),
+    ARScreen(),
   ];
 
   @override
@@ -71,6 +73,7 @@ class _MainShellState extends State<MainShell> {
           BottomNavigationBarItem(icon: Icon(Icons.devices), label: 'Devices'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Diagnostics'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera), label: 'AR'),
         ],
       ),
     );
