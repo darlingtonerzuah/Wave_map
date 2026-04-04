@@ -27,7 +27,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   try {
     if (kIsWeb) {
       // Web: use backend mock data
-      final response = await _dio.get('http://10.11.59.210:5000/api/devices');
+      final response = await _dio.get('https://wifi-ar-backend-1.onrender.com/api/devices');
       setState(() {
         _devices = (response.data as List).map((d) => NetworkDevice(
           name: d['name'],

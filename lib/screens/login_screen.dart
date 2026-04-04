@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final response = await _dio.post(
-        'http://10.11.59.210:5000/api/auth/login',
+        'http://wifi-ar-backend-1.onrender.com:5000/api/auth/login',
         data: {
           'email': _emailController.text.trim(),
           'password': _passwordController.text.trim(),
