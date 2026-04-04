@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wifi_scan/wifi_scan.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/scan_point.dart';
 import '../painters/heatmap_painter.dart';
 import '../providers/settings_provider.dart';
@@ -24,7 +26,31 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
   @override
   void initState() {
     super.initState();
+    _loadSavedPoints();
     _loadNetworks();
+  }
+
+  Future<void> _loadSavedPoints() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('heatmap_points');
+    if (saved != null) {
+      final Map<String, dynamic> decoded = jsonDecode(saved);
+      setState(() {
+        _networkPoints = decoded.map((key, value) => MapEntry(
+              key,
+              (value as List)
+                  .map((e) => ScanPoint.fromJson(e))
+                  .toList(),
+            ));
+      });
+    }
+  }
+
+  Future<void> _savePoints() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = jsonEncode(_networkPoints
+        .map((key, value) => MapEntry(key, value.map((e) => e.toJson()).toList())));
+    await prefs.setString('heatmap_points', encoded);
   }
 
   Future<void> _loadNetworks() async {
@@ -67,10 +93,14 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
           ];
         });
 
+        await _savePoints();
+
         final settings = context.read<SettingsProvider>();
         if (settings.alerts && rssi < -70) {
           AlertService().showWeakSignalAlert(
-              _currentNetwork!.ssid.isEmpty ? 'Hidden Network' : _currentNetwork!.ssid,
+              _currentNetwork!.ssid.isEmpty
+                  ? 'Hidden Network'
+                  : _currentNetwork!.ssid,
               rssi);
         }
       }
@@ -80,9 +110,7 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
   }
 
   void _previousNetwork() {
-    if (_currentNetworkIndex > 0) {
-      setState(() => _currentNetworkIndex--);
-    }
+    if (_currentNetworkIndex > 0) setState(() => _currentNetworkIndex--);
   }
 
   void _nextNetwork() {
@@ -105,9 +133,7 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.chevron_left),
-                        onPressed: _currentNetworkIndex > 0
-                            ? _previousNetwork
-                            : null,
+                        onPressed: _currentNetworkIndex > 0 ? _previousNetwork : null,
                         color: _currentNetworkIndex > 0
                             ? const Color(0xFF00E5FF)
                             : Colors.grey,
@@ -124,10 +150,9 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.chevron_right),
-                        onPressed:
-                            _currentNetworkIndex < _networks.length - 1
-                                ? _nextNetwork
-                                : null,
+                        onPressed: _currentNetworkIndex < _networks.length - 1
+                            ? _nextNetwork
+                            : null,
                         color: _currentNetworkIndex < _networks.length - 1
                             ? const Color(0xFF00E5FF)
                             : Colors.grey,
@@ -149,10 +174,10 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async {
               if (_currentNetwork != null) {
-                setState(() =>
-                    _networkPoints[_currentNetwork!.bssid] = []);
+                setState(() => _networkPoints[_currentNetwork!.bssid] = []);
+                await _savePoints();
               }
             },
           ),

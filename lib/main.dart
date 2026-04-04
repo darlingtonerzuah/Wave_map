@@ -7,9 +7,11 @@ import 'screens/diagnostics_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/ar_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'services/keepalive_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
+  KeepAliveService().start();
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final onboarded = prefs.getBool('onboarded') ?? false;

@@ -5,6 +5,7 @@ import '../services/wifi_service.dart';
 import '../models/network_device.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ARScreen extends StatefulWidget {
   const ARScreen({super.key});
@@ -85,9 +86,38 @@ class _ARScreenState extends State<ARScreen> {
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF00E5FF)))
           : _error.isNotEmpty
-              ? Center(
-                  child: Text(_error,
-                      style: const TextStyle(color: Colors.red)))
+    ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.camera_alt, color: Colors.grey, size: 64),
+            const SizedBox(height: 16),
+            Text(_error,
+                style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _error = '';
+                  _loading = true;
+                });
+                _initCamera();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00E5FF),
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('Retry'),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => openAppSettings(),
+              child: const Text('Open Settings',
+                  style: TextStyle(color: Color(0xFF00E5FF))),
+            ),
+          ],
+        ),
+      )
               : Stack(
                   children: [
                     // Camera feed
