@@ -9,7 +9,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="true"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
-        android:label="wifi_ar"
+        android:label="Wavemap"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
