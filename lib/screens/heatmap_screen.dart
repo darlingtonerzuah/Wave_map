@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/scan_point.dart';
 import '../painters/heatmap_painter.dart';
 import '../services/wifi_service.dart';
+import '../providers/settings_provider.dart';
+import '../services/alert_service.dart';
 
 class HeatmapScreen extends StatefulWidget {
   const HeatmapScreen({super.key});
@@ -23,12 +26,19 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
     if (devices.isNotEmpty) {
       final strongest = devices.reduce((a, b) => a.rssi > b.rssi ? a : b);
+
       setState(() {
         _points.add(ScanPoint(
           position: details.localPosition,
           rssi: strongest.rssi,
         ));
       });
+
+      // Check signal and alert if enabled
+      final settings = context.read<SettingsProvider>();
+      if (settings.alerts && strongest.rssi < -70) {
+        AlertService().showWeakSignalAlert(strongest.name, strongest.rssi);
+      }
     }
 
     setState(() => _scanning = false);
