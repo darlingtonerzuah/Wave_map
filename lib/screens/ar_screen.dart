@@ -3,6 +3,8 @@ import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../services/wifi_service.dart';
 import '../models/network_device.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 
 class ARScreen extends StatefulWidget {
   const ARScreen({super.key});
@@ -92,8 +94,9 @@ class _ARScreenState extends State<ARScreen> {
                     SizedBox.expand(
                       child: CameraPreview(_controller!),
                     ),
-                    // WiFi overlays
-                    SafeArea(
+                   // WiFi overlays
+                   if (context.watch<SettingsProvider>().arOverlay)
+                     SafeArea(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
