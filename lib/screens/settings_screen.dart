@@ -49,7 +49,10 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.grey),
             title: const Text('Privacy Policy'),
-            onTap: () {},
+           onTap: () async {
+              final uri = Uri.parse('https://darlingtonerzuah.github.io/portfolio/privacy-policy.html');
+              if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+            },
           ),
           _sectionTitle('Contact Creator'),
           ListTile(
