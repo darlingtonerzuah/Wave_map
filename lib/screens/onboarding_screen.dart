@@ -15,33 +15,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, dynamic>> _pages = [
     {
       'icon': Icons.wifi,
+      'title': 'Welcome to Wavemap',
+      'description':
+          'Wavemap helps you visualize, analyze and navigate WiFi signals around you. Walk around any space and understand your network coverage like never before.',
+    },
+    {
+      'icon': Icons.map,
       'title': 'WiFi Heatmap',
       'description':
-          'Tap anywhere on screen as you walk around your space. The app scans real WiFi signal strength at each spot and paints a color — green is strong, orange is okay, red is weak.',
+          'Pick a network and tap anywhere on screen as you walk around. Wavemap paints a color map of signal strength — green is strong, orange is okay, red is weak. Each network gets its own map and your data is saved automatically.',
     },
     {
       'icon': Icons.devices,
       'title': 'Devices',
       'description':
-          'See all nearby WiFi networks detected by your phone. Each card shows the network name, signal strength in dBm, and connection quality.',
+          'See all nearby WiFi networks detected by your phone. Each card shows the network name, signal strength in dBm, and connection quality in real time.',
     },
     {
       'icon': Icons.bar_chart,
       'title': 'Diagnostics',
       'description':
-          'View real-time details about your current network — name, BSSID, ping speed, and signal quality. Hit refresh to get the latest data.',
+          'Tap any network from the list to see its full details — frequency band, security type, signal quality and ping speed. Great for troubleshooting slow connections.',
     },
     {
-      'icon': Icons.camera,
-      'title': 'AR View',
+      'icon': Icons.explore,
+      'title': 'WiFi Compass',
       'description':
-          'Point your camera around the room to see nearby WiFi networks overlaid on the live camera feed. Toggle AR Overlay in Settings to show or hide the cards.',
+          'Pick a network and walk around. The compass arrow points toward the direction where you recorded the strongest signal. Tap "Scan Signal" as you move to update the reading.',
     },
     {
       'icon': Icons.settings,
       'title': 'Settings',
       'description':
-          'Customize your experience — switch between dark and light mode, toggle AR overlay, enable weak signal alerts, and choose your plan.',
+          'Toggle dark mode, enable or disable the AR overlay, and turn weak signal alerts on or off. You can also contact the creator directly from here and revisit this tutorial anytime.',
     },
   ];
 
@@ -49,7 +55,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarded', true);
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+    }
+  }
+
+  void _close() {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      _finish();
     }
   }
 
@@ -60,6 +74,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Close button for when accessed from settings
+            Align(
+              alignment: Alignment.topRight,
+              child: TextButton(
+                onPressed: _close,
+                child: const Text('Close',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            ),
             Expanded(
               child: PageView.builder(
                 controller: _controller,
@@ -88,9 +111,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           page['title'] as String,
                           style: const TextStyle(
-                              fontSize: 28,
+                              fontSize: 26,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF00E5FF)),
+                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -98,7 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                               color: Colors.grey,
-                              fontSize: 16,
+                              fontSize: 15,
                               height: 1.6),
                         ),
                       ],
@@ -107,7 +131,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            // Page indicators
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
@@ -133,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: _finish,
+                    onPressed: _close,
                     child: const Text('Skip',
                         style: TextStyle(color: Colors.grey)),
                   ),
@@ -157,7 +180,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
-                      _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                      _currentPage == _pages.length - 1
+                          ? 'Get Started'
+                          : 'Next',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'onboarding_screen.dart';
 import '../providers/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,6 +53,18 @@ class SettingsScreen extends StatelessWidget {
            onTap: () async {
               final uri = Uri.parse('https://darlingtonerzuah.github.io/portfolio/privacy-policy.html');
               if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_outline, color: Color(0xFF00E5FF)),
+            title: const Text('View Tutorial'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const OnboardingScreen(),
+                ),
+              );
             },
           ),
           _sectionTitle('Contact Creator'),
