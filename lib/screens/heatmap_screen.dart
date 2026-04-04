@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/scan_point.dart';
 import '../painters/heatmap_painter.dart';
+import '../services/wifi_service.dart';
 
 class HeatmapScreen extends StatefulWidget {
   const HeatmapScreen({super.key});
@@ -11,20 +12,26 @@ class HeatmapScreen extends StatefulWidget {
 
 class _HeatmapScreenState extends State<HeatmapScreen> {
   final List<ScanPoint> _points = [];
+  bool _scanning = false;
 
-  void _onTap(TapUpDetails details) {
-    setState(() {
-      _points.add(ScanPoint(
-        position: details.localPosition,
-        rssi: _mockRssi(),
-      ));
-    });
-  }
+  Future<void> _onTap(TapUpDetails details) async {
+    if (_scanning) return;
+    setState(() => _scanning = true);
 
-  int _mockRssi() {
-    // Simulated signal — we'll replace with real WiFi data later
-    final values = [-40, -55, -65, -75, -85];
-    return values[_points.length % values.length];
+    final wifiService = WifiService();
+    final devices = await wifiService.scanDevices();
+
+    if (devices.isNotEmpty) {
+      final strongest = devices.reduce((a, b) => a.rssi > b.rssi ? a : b);
+      setState(() {
+        _points.add(ScanPoint(
+          position: details.localPosition,
+          rssi: strongest.rssi,
+        ));
+      });
+    }
+
+    setState(() => _scanning = false);
   }
 
   @override
@@ -34,6 +41,18 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
         title: const Text('WiFi Heatmap'),
         backgroundColor: const Color(0xFF111111),
         actions: [
+          if (_scanning)
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Color(0xFF00E5FF),
+                  strokeWidth: 2,
+                ),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () => setState(() => _points.clear()),
@@ -41,7 +60,7 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
         ],
       ),
       body: GestureDetector(
-        onTapUp: _onTap,
+        onTapUp: (details) => _onTap(details),
         child: CustomPaint(
           painter: HeatmapPainter(points: _points),
           child: Container(
