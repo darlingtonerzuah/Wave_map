@@ -6,18 +6,24 @@ import 'screens/device_screen.dart';
 import 'screens/diagnostics_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/ar_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final onboarded = prefs.getBool('onboarded') ?? false;
   runApp(
     ChangeNotifierProvider(
       create: (_) => SettingsProvider(),
-      child: const WifiARApp(),
+      child: WifiARApp(onboarded: onboarded),
     ),
   );
 }
 
 class WifiARApp extends StatelessWidget {
-  const WifiARApp({super.key});
+  final bool onboarded;
+  const WifiARApp({super.key, required this.onboarded});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +45,11 @@ class WifiARApp extends StatelessWidget {
                 secondary: Color(0xFF0077CC),
               ),
             ),
-      home: const MainShell(),
+      initialRoute: onboarded ? '/home' : '/onboarding',
+      routes: {
+        '/onboarding': (context) => const OnboardingScreen(),
+        '/home': (context) => const MainShell(),
+      },
     );
   }
 }

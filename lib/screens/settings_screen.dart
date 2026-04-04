@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -39,9 +40,6 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (val) => context.read<SettingsProvider>().setAlerts(val),
             activeColor: const Color(0xFF00E5FF),
           ),
-          _sectionTitle('Plan'),
-          _planTile(context, settings, 'Free', 'Basic heatmap, 3 saved maps'),
-          _planTile(context, settings, 'Pro', 'Unlimited maps, AR, device tracking, exports'),
           _sectionTitle('About'),
           ListTile(
             leading: const Icon(Icons.info_outline, color: Colors.grey),
@@ -52,6 +50,25 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.privacy_tip, color: Colors.grey),
             title: const Text('Privacy Policy'),
             onTap: () {},
+          ),
+          _sectionTitle('Contact Creator'),
+          ListTile(
+            leading: const Icon(Icons.email, color: Color(0xFF00E5FF)),
+            title: const Text('Email'),
+            subtitle: const Text('darlingtonerzuah@gmail.com'),
+            onTap: () async {
+              final uri = Uri.parse('mailto:darlingtonerzuah@gmail.com');
+              if (await canLaunchUrl(uri)) await launchUrl(uri);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat, color: Color(0xFF00E5FF)),
+            title: const Text('WhatsApp'),
+            subtitle: const Text('+233208157879'),
+            onTap: () async {
+              final uri = Uri.parse('https://wa.me/233208157879');
+              if (await canLaunchUrl(uri)) await launchUrl(uri);
+            },
           ),
         ],
       ),
@@ -64,38 +81,6 @@ class SettingsScreen extends StatelessWidget {
       child: Text(title,
           style: const TextStyle(
               color: Color(0xFF00E5FF), fontWeight: FontWeight.bold)),
-    );
-  }
-
-  Widget _planTile(BuildContext context, SettingsProvider settings,
-      String plan, String description) {
-    final isSelected = settings.plan == plan;
-    return GestureDetector(
-      onTap: () => context.read<SettingsProvider>().setPlan(plan),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF00E5FF).withOpacity(0.1)
-              : const Color(0xFF1A1A1A),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF00E5FF)
-                : Colors.grey.withOpacity(0.2),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(plan,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(description,
-                style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          ],
-        ),
-      ),
     );
   }
 }

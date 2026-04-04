@@ -5,12 +5,10 @@ class SettingsProvider extends ChangeNotifier {
   bool _darkMode = true;
   bool _arOverlay = true;
   bool _alerts = true;
-  String _plan = 'Free';
 
   bool get darkMode => _darkMode;
   bool get arOverlay => _arOverlay;
   bool get alerts => _alerts;
-  String get plan => _plan;
 
   SettingsProvider() {
     _load();
@@ -21,7 +19,6 @@ class SettingsProvider extends ChangeNotifier {
     _darkMode = prefs.getBool('darkMode') ?? true;
     _arOverlay = prefs.getBool('arOverlay') ?? true;
     _alerts = prefs.getBool('alerts') ?? true;
-    _plan = prefs.getString('plan') ?? 'Free';
     notifyListeners();
   }
 
@@ -43,13 +40,6 @@ class SettingsProvider extends ChangeNotifier {
     _alerts = val;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('alerts', val);
-    notifyListeners();
-  }
-
-  Future<void> setPlan(String val) async {
-    _plan = val;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('plan', val);
     notifyListeners();
   }
 }
