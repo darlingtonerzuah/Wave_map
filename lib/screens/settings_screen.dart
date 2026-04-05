@@ -82,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('WhatsApp'),
             subtitle: const Text('+23320540379'),
             onTap: () async {
-              final uri = Uri.parse('https://wa.me/23320540379');
+              final uri = Uri.parse('https://wa.me/+23320540379');
               if (await canLaunchUrl(uri)) await launchUrl(uri);
             },
           ),
