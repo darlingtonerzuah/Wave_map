@@ -80,9 +80,9 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.chat, color: Color(0xFF00E5FF)),
             title: const Text('WhatsApp'),
-            subtitle: const Text('+23320540379'),
+            subtitle: const Text('+233205403789'),
             onTap: () async {
-              final uri = Uri.parse('https://wa.me/+23320540379');
+              final uri = Uri.parse('https://wa.me/+233205403789');
               if (await canLaunchUrl(uri)) await launchUrl(uri);
             },
           ),
