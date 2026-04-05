@@ -71,9 +71,9 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.email, color: Color(0xFF00E5FF)),
             title: const Text('Email'),
-            subtitle: const Text('darlingtonerzuah@gmail.com'),
+            subtitle: const Text('contact.wavemap@gmail.com'),
             onTap: () async {
-              final uri = Uri.parse('mailto:darlingtonerzuah@gmail.com');
+              final uri = Uri.parse('mailto:contact.wavemap@gmail.com');
               if (await canLaunchUrl(uri)) await launchUrl(uri);
             },
           ),
